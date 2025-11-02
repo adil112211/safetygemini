@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import WebApp from '@twa-dev/sdk';
+import apiRequest from '../api';
 
 function Results() {
   const [results, setResults] = useState([]);
@@ -11,15 +11,7 @@ function Results() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch('/api/user/results', {
-          headers: {
-            'Authorization': `tma ${WebApp.initData}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Не удалось загрузить историю результатов.');
-        }
-        const data = await response.json();
+        const data = await apiRequest('/api/user/results');
         setResults(data);
       } catch (e) {
         setError(e.message);
@@ -28,7 +20,6 @@ function Results() {
       }
     };
     
-    WebApp.ready();
     fetchResults();
   }, []);
 
