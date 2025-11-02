@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import WebApp from '@twa-dev/sdk';
+import apiRequest from '../api';
 
 function AI() {
   const [question, setQuestion] = useState('');
@@ -18,20 +17,7 @@ function AI() {
     setError('');
     setAnswer('');
     try {
-      const response = await fetch('/api/ask-ai', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `tma ${WebApp.initData}`,
-        },
-        body: JSON.stringify({ question }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Не удалось получить ответ от ассистента.');
-      }
-      
-      const data = await response.json();
+      const data = await apiRequest('/api/ask-ai', 'POST', { question });
       setAnswer(data.answer);
 
     } catch (err) {
