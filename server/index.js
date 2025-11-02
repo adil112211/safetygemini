@@ -11,11 +11,27 @@ const PORT = process.env.PORT || 8080;
 
 // --- Middleware ---
 
-// Настраиваем CORS, чтобы разрешить запросы только с нашего фронтенда
-// Это критически важно для исправления ошибки "failed to fetch"
+// Более надежная настройка CORS для исправления ошибки "Failed to fetch"
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173' // Для локальной разработки
+].filter(Boolean); // Удаляем пустые значения, если FRONTEND_URL не установлен
+
+if (!process.env.FRONTEND_URL) {
+    console.warn('⚠️ WARNING: FRONTEND_URL is not set. CORS might not work in production.');
+}
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
-  optionsSuccessStatus: 200, // для совместимости со старыми браузерами
+    origin: function (origin, callback) {
+        // Разрешаем запросы, если их источник есть в белом списке,
+        // или если это запросы без источника (например, Postman, server-to-server)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`Origin '${origin}' not allowed by CORS.`));
+        }
+    },
+    optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
