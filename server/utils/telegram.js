@@ -1,4 +1,3 @@
-
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
@@ -12,7 +11,11 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
  * @returns {boolean} - True if validation is successful, false otherwise
  */
 export function validateInitData(initData) {
-    if (!initData || !BOT_TOKEN) {
+    if (!BOT_TOKEN) {
+        // Эта ошибка будет поймана в authMiddleware и отправлена на фронтенд
+        throw new Error("TELEGRAM_BOT_TOKEN is not configured on the server.");
+    }
+    if (!initData) {
         return false;
     }
 
