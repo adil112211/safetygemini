@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { UserContext } from '../App';
+import apiRequest from '../api';
 
 function Test() {
   const { topic } = useParams();
@@ -19,16 +19,7 @@ function Test() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch('/api/generate-test', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `tma ${WebApp.initData}`,
-          },
-          body: JSON.stringify({ topic }),
-        });
-        if (!response.ok) throw new Error('Не удалось загрузить вопросы');
-        const data = await response.json();
+        const data = await apiRequest('/api/generate-test', 'POST', { topic });
         setQuestions(data);
       } catch (e) {
         setError(e.message);
@@ -54,16 +45,11 @@ function Test() {
 
       setIsLoading(true);
       try {
-          const response = await fetch('/api/submit-test', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `tma ${WebApp.initData}`,
-              },
-              body: JSON.stringify({ userId: user.id, topic, score: finalScore }),
+          const data = await apiRequest('/api/submit-test', 'POST', { 
+            userId: user.id, 
+            topic, 
+            score: finalScore 
           });
-          if (!response.ok) throw new Error('Не удалось отправить результаты');
-          const data = await response.json();
           setResult(data);
           
           // Отправка данных боту
