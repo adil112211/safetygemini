@@ -9,11 +9,19 @@ dotenv.config({ path: '../.env' });
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
-app.use(cors());
+// --- Middleware ---
+
+// Настраиваем CORS, чтобы разрешить запросы только с нашего фронтенда
+// Это критически важно для исправления ошибки "failed to fetch"
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  optionsSuccessStatus: 200, // для совместимости со старыми браузерами
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
-// Routes
+// --- Routes ---
 app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
@@ -21,9 +29,11 @@ app.get('/', (req, res) => {
 });
 
 // Этот листенер будет использоваться для локальной разработки, Vercel его проигнорирует
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`✅ Server is running locally on port ${PORT}`);
+    });
+}
 
 // Экспортируем app для Vercel
 export default app;
