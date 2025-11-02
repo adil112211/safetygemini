@@ -6,6 +6,7 @@ import Test from './pages/Test';
 import AI from './pages/AI';
 import Results from './pages/Results';
 import Settings from './pages/Settings';
+import apiRequest from './api'; // Импортируем нашу новую утилиту
 
 export const UserContext = createContext(null);
 
@@ -17,22 +18,9 @@ function App() {
 
   useEffect(() => {
     const authenticateUser = async () => {
-      if (WebApp.initData) {
+      if (WebApp.initData && import.meta.env.VITE_API_URL) {
         try {
-          const response = await fetch('/api/user/auth', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `tma ${WebApp.initData}`,
-            },
-          });
-
-          if (!response.ok) {
-             const errorData = await response.json();
-             throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-          }
-          
-          const userData = await response.json();
+          const userData = await apiRequest('/api/user/auth', 'POST');
           setUser(userData);
           WebApp.expand(); // Раскрываем приложение на весь экран
         } catch (e) {
@@ -42,7 +30,11 @@ function App() {
           setLoading(false);
         }
       } else {
-         setError('Не удалось получить данные Telegram. Пожалуйста, откройте приложение через Telegram.');
+         if (!WebApp.initData) {
+            setError('Не удалось получить данные Telegram. Пожалуйста, откройте приложение через Telegram.');
+         } else {
+            setError('URL для API не настроен. Проверьте переменные окружения.');
+         }
          setLoading(false);
       }
     };
