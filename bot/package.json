@@ -1,0 +1,18 @@
+
+{
+  "name": "safety-tma-bot",
+  "version": "1.0.0",
+  "description": "Telegram Bot to launch the Safety Tests Mini App",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}
